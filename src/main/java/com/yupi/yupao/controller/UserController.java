@@ -7,8 +7,8 @@ import com.yupi.yupao.common.ErrorCode;
 import com.yupi.yupao.common.ResultUtils;
 import com.yupi.yupao.exception.BusinessException;
 import com.yupi.yupao.model.domain.User;
-import com.yupi.yupao.model.domain.request.UserLoginRequest;
-import com.yupi.yupao.model.domain.request.UserRegisterRequest;
+import com.yupi.yupao.model.request.UserLoginRequest;
+import com.yupi.yupao.model.request.UserRegisterRequest;
 import com.yupi.yupao.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +26,6 @@ import static com.yupi.yupao.contant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户接口
- *
  */
 @RestController
 @RequestMapping("/user")
@@ -67,7 +66,7 @@ public class UserController {
      * 用户登录
      *
      * @param userLoginRequest 用户登录请求参数
-     * @param request http 请求对象
+     * @param request          http 请求对象
      * @return BaseResponse<User>
      */
     @PostMapping("/login")

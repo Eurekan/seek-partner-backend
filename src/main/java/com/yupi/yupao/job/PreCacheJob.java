@@ -34,7 +34,7 @@ public class PreCacheJob {
     private List<Long> mainUserList = Arrays.asList(6L, 7L, 8L, 9L);
 
     // 每天执行，预热推荐用户
-    @Scheduled(cron = "0 35 17 * * *")   //自己设置时间测试
+    @Scheduled(cron = "0 0 0 * * *")   //自己设置时间测试
     public void doCacheRecommendUser() {
         // 获取锁
         RLock lock = redissonClient.getLock("yupao:precachejob:docache:lock");
