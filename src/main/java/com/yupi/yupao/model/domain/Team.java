@@ -1,14 +1,14 @@
 package com.yupi.yupao.model.domain;
 
 import com.baomidou.mybatisplus.annotation.*;
-
-import java.time.LocalDateTime;
-import java.io.Serializable;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
+
+import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -45,7 +45,7 @@ public class Team implements Serializable {
 
     @ApiModelProperty(value = "过期时间")
     @TableField("expireTime")
-    private LocalDateTime expireTime;
+    private Date expireTime;
 
     @ApiModelProperty(value = "用户id（队长 id）")
     @TableField("userId")
@@ -61,11 +61,11 @@ public class Team implements Serializable {
 
     @ApiModelProperty(value = "创建时间")
     @TableField("createTime")
-    private LocalDateTime createTime;
+    private Date createTime;
 
     @ApiModelProperty(value = "更新时间")
     @TableField("updateTime")
-    private LocalDateTime updateTime;
+    private Date updateTime;
 
     @ApiModelProperty(value = "是否删除")
     @TableField("isDelete")

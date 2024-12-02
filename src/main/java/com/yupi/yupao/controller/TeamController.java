@@ -8,7 +8,9 @@ import com.yupi.yupao.common.ErrorCode;
 import com.yupi.yupao.common.ResultUtils;
 import com.yupi.yupao.exception.BusinessException;
 import com.yupi.yupao.model.domain.Team;
+import com.yupi.yupao.model.domain.User;
 import com.yupi.yupao.model.dto.TeamQuery;
+import com.yupi.yupao.model.request.TeamAddRequest;
 import com.yupi.yupao.service.TeamService;
 import com.yupi.yupao.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +18,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -39,15 +42,20 @@ public class TeamController {
     private TeamService teamService;
 
     @PostMapping("/add")
-    public BaseResponse<Long> addTeam(@RequestBody Team team) {
-        if (team == null) {
+    public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
+        // 校验请求参数是否为空
+        if (teamAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        boolean save = teamService.save(team);
-        if (!save) {
-            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "插入失败");
-        }
-        return ResultUtils.success(team.getId());
+        // 校验用户是否登录
+        User loginUser = userService.getLoginUser(request);
+        // 封装队伍对象
+        Team team = new Team();
+        BeanUtils.copyProperties(teamAddRequest, team);
+        // 添加队伍
+        long teamId =  teamService.addTeam(team, loginUser);
+        // 返回结果
+        return ResultUtils.success(teamId);
     }
 
     @DeleteMapping("/delete")
