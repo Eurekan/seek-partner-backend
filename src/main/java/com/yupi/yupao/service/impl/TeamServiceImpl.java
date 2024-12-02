@@ -10,6 +10,7 @@ import com.yupi.yupao.model.domain.User;
 import com.yupi.yupao.model.domain.UserTeam;
 import com.yupi.yupao.model.dto.TeamQuery;
 import com.yupi.yupao.model.enums.TeamStatusEnum;
+import com.yupi.yupao.model.request.TeamUpdateRequest;
 import com.yupi.yupao.model.vo.TeamUserVO;
 import com.yupi.yupao.model.vo.UserVO;
 import com.yupi.yupao.service.TeamService;
@@ -54,7 +55,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
         }
         // 3. 校验信息
         //  a. 队伍人数 > 1 且 <= 20
-        Integer maxNum = Optional.ofNullable(team.getMaxNum()).orElse(0);
+        int maxNum = Optional.ofNullable(team.getMaxNum()).orElse(0);
         if (maxNum < 1 || maxNum > 20) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍人数不满足要求");
         }
@@ -70,13 +71,13 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
         }
         //  d. status 是否公开（int）不传默认为 0（公开）
         Integer status = Optional.ofNullable(team.getStatus()).orElse(0);
-        TeamStatusEnum teamStatusEnum = TeamStatusEnum.getEnumByValue(status);
-        if (teamStatusEnum == null) {
+        TeamStatusEnum statusEnum = TeamStatusEnum.getEnumByValue(status);
+        if (statusEnum == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR, "队伍状态不满足要求");
         }
         //  e. 如果 status 是加密状态，一定要有密码，且密码 <= 32
         String password = team.getPassword();
-        if (TeamStatusEnum.SECRET.equals(teamStatusEnum)) {
+        if (TeamStatusEnum.SECRET.equals(statusEnum)) {
             if (StringUtils.isBlank(password) || password.length() > 32) {
                 throw new BusinessException(ErrorCode.PARAMS_ERROR, "密码设置不正确");
             }
@@ -187,5 +188,33 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
             teamUserVOList.add(teamUserVO);
         }
         return teamUserVOList;
+    }
+
+    @Override
+    public boolean updateTeam(TeamUpdateRequest team, User loginUser) {
+        if (team == null) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Long id = team.getId();
+        if (id == null || id <= 0) {
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        Team oldTeam = this.getById(id);
+        if (oldTeam == null) {
+            throw new BusinessException(ErrorCode.NULL_ERROR, "队伍不存在");
+        }
+        // 只有管理员或者队伍的创建者可以修改
+        if (!oldTeam.getUserId().equals(loginUser.getId()) && !userService.isAdmin(loginUser)) {
+            throw new BusinessException(ErrorCode.NO_AUTH);
+        }
+        TeamStatusEnum statusEnum = TeamStatusEnum.getEnumByValue(team.getStatus());
+        if (statusEnum.equals(TeamStatusEnum.SECRET)) {
+            if (StringUtils.isBlank(team.getPassword())) {
+                throw new BusinessException(ErrorCode.PARAMS_ERROR, "加密房间必须要设置密码");
+            }
+        }
+        Team updateTeam = new Team();
+        BeanUtils.copyProperties(team, updateTeam);
+        return this.updateById(updateTeam);
     }
 }
