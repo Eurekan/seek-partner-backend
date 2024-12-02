@@ -11,6 +11,7 @@ import com.yupi.yupao.model.domain.Team;
 import com.yupi.yupao.model.domain.User;
 import com.yupi.yupao.model.dto.TeamQuery;
 import com.yupi.yupao.model.request.TeamAddRequest;
+import com.yupi.yupao.model.vo.TeamUserVO;
 import com.yupi.yupao.service.TeamService;
 import com.yupi.yupao.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class TeamController {
     private TeamService teamService;
 
     @PostMapping("/add")
-    public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
+        public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
         // 校验请求参数是否为空
         if (teamAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -95,14 +96,15 @@ public class TeamController {
     }
 
     @GetMapping("/list")
-    public BaseResponse<List<Team>> listTeams(TeamQuery teamQuery) {
-        if (teamQuery == null) {
+    public BaseResponse<List<TeamUserVO>> listTeams(TeamQuery teamQuery,HttpServletRequest request){
+        // 判断请求参数是否为空
+        if (teamQuery == null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        Team team = new Team();
-        BeanUtils.copyProperties(teamQuery, team);
-        QueryWrapper<Team> queryWrapper = new QueryWrapper<>(team);
-        List<Team> teamList = teamService.list(queryWrapper);
+        // 判断用户是否为管理员
+        boolean isAdmin = userService.isAdmin(request);
+        // 获取队伍列表
+        List<TeamUserVO> teamList = teamService.listTeams(teamQuery,isAdmin);
         return ResultUtils.success(teamList);
     }
 
