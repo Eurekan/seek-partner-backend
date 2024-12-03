@@ -4,6 +4,7 @@ import com.yupi.yupao.model.domain.Team;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.yupi.yupao.model.domain.User;
 import com.yupi.yupao.model.dto.TeamQuery;
+import com.yupi.yupao.model.request.TeamJoinRequest;
 import com.yupi.yupao.model.request.TeamUpdateRequest;
 import com.yupi.yupao.model.vo.TeamUserVO;
 
@@ -21,25 +22,33 @@ public interface TeamService extends IService<Team> {
 
     /**
      * 创建队伍
-     * @param team
-     * @param loginUser
-     * @return
+     * @param team 队伍信息
+     * @param loginUser 登录用户
+     * @return teamId
      */
     long addTeam(Team team, User loginUser);
 
     /**
      * 搜索队伍
-     * @param teamQuery
-     * @param isAdmin
-     * @return
+     * @param teamQuery 查询条件
+     * @param isAdmin 是否登录
+     * @return teamUserVOList
      */
     List<TeamUserVO> listTeams(TeamQuery teamQuery, boolean isAdmin);
 
     /**
      * 更新队伍
-     * @param teamUpdateRequest
-     * @param loginUser
-     * @return
+     * @param teamUpdateRequest 更新队伍信息
+     * @param loginUser 登录用户
+     * @return boolean
      */
     boolean updateTeam(TeamUpdateRequest teamUpdateRequest, User loginUser);
+
+    /**
+     * 用户加入队伍
+     * @param teamJoinRequest 加入队伍信息
+     * @param loginUser 登录用户
+     * @return boolean
+     */
+    boolean joinTeam(TeamJoinRequest teamJoinRequest, User loginUser);
 }

@@ -7,8 +7,8 @@ package com.yupi.yupao.model.enums;
 public enum TeamStatusEnum {
 
     PUBLIC(0, "公开"),
-    SECRET(1, "私有"),
-    PRIVATE(2, "加密");
+    PRIVATE(1, "私有"),
+    SECRET(2, "加密");
 
     private int value;
 
