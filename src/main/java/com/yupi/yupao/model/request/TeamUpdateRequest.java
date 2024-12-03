@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 用户登录请求体
+ * 更新队伍请求体
  */
 @Data
 public class TeamUpdateRequest implements Serializable {

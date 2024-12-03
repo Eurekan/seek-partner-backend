@@ -40,7 +40,7 @@ public class SwaggerConfig {
                 .title("鱼泡")
                 .description("伙伴匹配平台接口文档")
                 .termsOfServiceUrl("Eurkan.github.io")
-                .contact(new Contact("Eureak","Eurkan.github.io","2455096251@qq.com"))
+                .contact(new Contact("Eureka","Eurkan.github.io","2455096251@qq.com"))
                 .version("1.0")
                 .build();
     }
