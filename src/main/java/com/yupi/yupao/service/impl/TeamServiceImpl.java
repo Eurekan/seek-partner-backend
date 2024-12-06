@@ -108,6 +108,7 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
         UserTeam userTeam = new UserTeam();
         userTeam.setUserId(loginUser.getId());
         userTeam.setTeamId(teamId);
+        userTeam.setJoinTime(new Date());
         result = userTeamService.save(userTeam);
         if (!result) {
             throw new BusinessException(ErrorCode.SYSTEM_ERROR, "创建队伍失败");
@@ -125,6 +126,11 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
             Long id = teamQuery.getId();
             if (id != null && id > 0) {
                 queryWrapper.eq("id", id);
+            }
+            // 队伍id列表查询条件
+            List<Long> idList = teamQuery.getIdList();
+            if (CollectionUtils.isNotEmpty(idList)) {
+                queryWrapper.in("id", idList);
             }
             // 名称和描述查询条件
             String searchText = teamQuery.getSearchText();

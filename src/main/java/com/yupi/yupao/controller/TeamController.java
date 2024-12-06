@@ -9,6 +9,7 @@ import com.yupi.yupao.common.ResultUtils;
 import com.yupi.yupao.exception.BusinessException;
 import com.yupi.yupao.model.domain.Team;
 import com.yupi.yupao.model.domain.User;
+import com.yupi.yupao.model.domain.UserTeam;
 import com.yupi.yupao.model.dto.TeamQuery;
 import com.yupi.yupao.model.request.TeamAddRequest;
 import com.yupi.yupao.model.request.TeamJoinRequest;
@@ -17,6 +18,7 @@ import com.yupi.yupao.model.request.TeamUpdateRequest;
 import com.yupi.yupao.model.vo.TeamUserVO;
 import com.yupi.yupao.service.TeamService;
 import com.yupi.yupao.service.UserService;
+import com.yupi.yupao.service.UserTeamService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -45,13 +48,16 @@ public class TeamController {
     @Resource
     private TeamService teamService;
 
+    @Resource
+    private UserTeamService userTeamService;
+
     @PostMapping("/add")
         public BaseResponse<Long> addTeam(@RequestBody TeamAddRequest teamAddRequest, HttpServletRequest request) {
         // 校验请求参数是否为空
         if (teamAddRequest == null) {
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
         }
-        // 校验用户是否登录
+        // 获取当前登录用户
         User loginUser = userService.getLoginUser(request);
         // 封装队伍对象
         Team team = new Team();
@@ -101,7 +107,7 @@ public class TeamController {
     }
 
     @GetMapping("/list")
-    public BaseResponse<List<TeamUserVO>> listTeams(TeamQuery teamQuery,HttpServletRequest request){
+    public BaseResponse<List<TeamUserVO>> listTeams(TeamQuery teamQuery, HttpServletRequest request) {
         // 判断请求参数是否为空
         if (teamQuery == null){
             throw new BusinessException(ErrorCode.PARAMS_ERROR);
@@ -144,6 +150,39 @@ public class TeamController {
         User loginUser = userService.getLoginUser(request);
         boolean result = teamService.quitTeam(teamJoinRequest, loginUser);
         return ResultUtils.success(result);
+    }
+
+    @GetMapping("/list/my/create")
+    public BaseResponse<List<TeamUserVO>> listMyCreateTeams(TeamQuery teamQuery, HttpServletRequest request) {
+        // 判断请求参数是否为空
+        if (teamQuery == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 获取当前登录用户
+        User loginUser = userService.getLoginUser(request);
+        // 设置创建人id
+        teamQuery.setUserId(loginUser.getId());
+        // 获取队伍列表
+        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, true);
+        return ResultUtils.success(teamList);
+    }
+
+    @GetMapping("/list/my/join")
+    public BaseResponse<List<TeamUserVO>> listMyJoinTeams(TeamQuery teamQuery, HttpServletRequest request) {
+        // 判断请求参数是否为空
+        if (teamQuery == null){
+            throw new BusinessException(ErrorCode.PARAMS_ERROR);
+        }
+        // 获取当前登录用户
+        User loginUser = userService.getLoginUser(request);
+        QueryWrapper<UserTeam> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("userId", loginUser.getId());
+        List<UserTeam> userTeamList = userTeamService.list(queryWrapper);
+        List<Long> teamIdList = userTeamList.stream().map(UserTeam::getTeamId).collect(Collectors.toList());
+        teamQuery.setIdList(teamIdList);
+        // 获取队伍列表
+        List<TeamUserVO> teamList = teamService.listTeams(teamQuery, true);
+        return ResultUtils.success(teamList);
     }
 
 }
