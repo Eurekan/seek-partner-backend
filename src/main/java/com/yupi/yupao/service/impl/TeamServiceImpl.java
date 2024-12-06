@@ -44,6 +44,12 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
     @Resource
     private UserService userService;
 
+    /**
+     * 创建队伍
+     * @param team 队伍信息
+     * @param loginUser 登录用户
+     * @return teamId
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public long addTeam(Team team, User loginUser) {
@@ -116,6 +122,12 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
         return teamId;
     }
 
+    /**
+     * 搜索队伍
+     * @param teamQuery 队伍查询信息
+     * @param isAdmin 是否为管理员
+     * @return teamUserVOList
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public List<TeamUserVO> listTeams(TeamQuery teamQuery, boolean isAdmin) {
@@ -199,6 +211,12 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
         return teamUserVOList;
     }
 
+    /**
+     * 更新队伍
+     * @param team 更新队伍信息
+     * @param loginUser 登录用户
+     * @return boolean
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean updateTeam(TeamUpdateRequest team, User loginUser) {
@@ -228,6 +246,12 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
         return this.updateById(updateTeam);
     }
 
+    /**
+     * 加入队伍
+     * @param teamJoinRequest 加入队伍信息
+     * @param loginUser 登录用户
+     * @return boolean
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean joinTeam(TeamJoinRequest teamJoinRequest, User loginUser) {
@@ -288,6 +312,12 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
         return userTeamService.save(userTeam);
     }
 
+    /**
+     * 退出队伍
+     * @param teamQuitRequest 退出队伍信息
+     * @param loginUser 登录用户
+     * @return boolean
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean quitTeam(TeamQuitRequest teamQuitRequest, User loginUser) {
@@ -346,6 +376,12 @@ public class TeamServiceImpl extends ServiceImpl<TeamMapper, Team> implements Te
 
     }
 
+    /**
+     * 删除队伍
+     * @param id 队伍id
+     * @param loginUser 登录用户
+     * @return boolean
+     */
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean deleteTeam(long id, User loginUser) {
