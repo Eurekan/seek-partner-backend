@@ -10,6 +10,8 @@ import com.yupi.yupao.exception.BusinessException;
 import com.yupi.yupao.model.domain.User;
 import com.yupi.yupao.service.UserService;
 import com.yupi.yupao.mapper.UserMapper;
+import com.yupi.yupao.utils.AlgorithmUtils;
+import javafx.util.Pair;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -17,10 +19,7 @@ import org.springframework.util.DigestUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -311,5 +310,76 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         Object userObj = request.getSession().getAttribute(USER_LOGIN_STATE);
         User user = (User) userObj;
         return user != null && user.getUserRole() == ADMIN_ROLE;
+    }
+
+    /**
+     * 根据用户标签匹配最相近的用户
+     * 该方法首先查询所有拥有标签的用户，然后计算这些用户的标签与当前登录用户标签之间的编辑距离，
+     * 并返回与登录用户标签最相近的指定数量的用户
+     *
+     * @param num 需要返回的用户数量
+     * @param loginUser 当前登录的用户
+     * @return 与登录用户标签最相近的用户列表
+     */
+    @Override
+    public List<User> matchUser(long num, User loginUser) {
+        // 创建查询条件，筛选出拥有标签的用户，并只选择id和tags字段
+        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
+        queryWrapper.isNotNull("tags");
+        queryWrapper.select("id", "tags");
+
+        // 执行查询，获取所有符合条件的用户
+        List<User> userList = this.list(queryWrapper);
+
+        // 获取登录用户的标签，并将其解析为字符串列表
+        String tags = loginUser.getTags();
+        Gson gson = new Gson();
+        List<String> tagList = gson.fromJson(tags, new TypeToken<List<String>>() {
+        }.getType());
+
+        // 创建一个列表，用于存储用户和编辑距离
+        List<Pair<User, Long>> list = new ArrayList<>();
+        for (User user : userList) {
+            String userTags = user.getTags();
+            // 跳过标签为空或与登录用户相同的用户
+            if (StringUtils.isBlank(userTags) || Objects.equals(user.getId(), loginUser.getId())) {
+                continue;
+            }
+            // 解析用户的标签
+            List<String> userTagList = gson.fromJson(userTags, new TypeToken<List<String>>() {
+            }.getType());
+            // 计算并获取用户与登录用户的标签距离
+            long distance = AlgorithmUtils.minDistance(tagList, userTagList);
+            // 将用户及其标签距离添加到列表中
+            list.add(new Pair<>(user, distance));
+        }
+
+        // 根据标签距离升序排序，并限制结果数量
+        List<Pair<User, Long>> topUserPairList = list.stream()
+                .sorted((a, b) -> (int) (a.getValue() - b.getValue()))
+                .limit(num)
+                .collect(Collectors.toList());
+
+        // 提取排序后的用户ID列表
+        List<Long> userListVo = topUserPairList.stream().map(pair -> pair.getKey().getId()).collect(Collectors.toList());
+
+        // 创建查询条件，筛选出ID在列表中的用户
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.in("id", userListVo);
+
+        // 根据用户ID查询用户信息，并将其映射为安全的用户对象
+        Map<Long, List<User>> userIdUserListMap = this.list(userQueryWrapper).stream()
+                .map(this::getSafetyUser)
+                .collect(Collectors.groupingBy(User::getId));
+
+        // 创建最终用户列表
+        List<User> finalUserList = new ArrayList<>();
+        for (Long userId : userListVo) {
+            // 根据用户ID从映射中获取用户信息，并添加到最终用户列表中
+            finalUserList.add(userIdUserListMap.get(userId).get(0));
+        }
+
+        // 返回最终用户列表
+        return finalUserList;
     }
 }
