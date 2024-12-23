@@ -78,4 +78,8 @@ public class UserVO implements Serializable {
      */
     private String planetCode;
 
+    /**
+     * 用户距离
+     */
+    private Double distance;
 }
