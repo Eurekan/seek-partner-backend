@@ -24,8 +24,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import static com.yupi.yupao.contant.UserConstant.ADMIN_ROLE;
-import static com.yupi.yupao.contant.UserConstant.USER_LOGIN_STATE;
+import static com.yupi.yupao.constant.UserConstant.ADMIN_ROLE;
+import static com.yupi.yupao.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户服务实现类

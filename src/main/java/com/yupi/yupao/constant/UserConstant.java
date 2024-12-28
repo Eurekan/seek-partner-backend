@@ -1,4 +1,4 @@
-package com.yupi.yupao.contant;
+package com.yupi.yupao.constant;
 
 /**
  * 用户常量

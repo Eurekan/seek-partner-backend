@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-import static com.yupi.yupao.contant.UserConstant.USER_LOGIN_STATE;
+import static com.yupi.yupao.constant.UserConstant.USER_LOGIN_STATE;
 
 /**
  * 用户接口

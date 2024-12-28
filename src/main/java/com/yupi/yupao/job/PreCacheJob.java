@@ -31,7 +31,7 @@ public class PreCacheJob {
     private RedissonClient redissonClient;
 
     // 重点用户
-    private List<Long> mainUserList = Arrays.asList(6L, 7L, 8L, 9L);
+    private final List<Long> mainUserList = Arrays.asList(6L, 7L, 8L, 9L);
 
     // 每天执行，预热推荐用户
     @Scheduled(cron = "0 0 0 * * *")   //自己设置时间测试
