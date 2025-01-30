@@ -1,4 +1,4 @@
-# Eureka2077的项目
+# 伙伴匹配系统
 ## 项目介绍
 帮助大家找到学习伙伴的移动端H5网站（APP风格），基于Springboot后端+Vue3前端的全栈项目
 
@@ -11,19 +11,18 @@
 并且涵盖了分布式、并发编程、锁、事务、缓存、性能优化、幂等性、数据一致性、大数据、算法等知识与实践
 ## 项目展示
 ### 主页：
-![index.png](pictures/index.png)
+![index.png](img/index.png)
 ### 找伙伴：
-![search.png](pictures/search.png)
+![search.png](img/search.png)
 ### 组队功能：
-![team.png](pictures/team.png)
+![team.png](img/team.png)
 ### 创建队伍：
-![addTeam.png](pictures/addTeam.png)
-### 个人信息及修改
-![user.png](pictures/user.png)
-![editUser.png](pictures/editUser.png)
-![userCreateTeam.png](pictures/userCreateTeam.png)
-![userJoinTeam.png](pictures/userJoinTeam.png)
-###
+![addTeam.png](img/addTeam.png)
+### 个人信息及修改：
+![user.png](img/user.png)
+![editUser.png](img/editUser.png)
+![userCreateTeam.png](img/userCreateTeam.png)
+![userJoinTeam.png](img/userJoinTeam.png)
 ## 技术选型
 ### 前端
 * Vue3
