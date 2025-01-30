@@ -101,10 +101,10 @@ public class User implements Serializable {
     /**
      * 经度
      */
-    private Integer longitude;
+    private Double longitude;
 
     /**
      * 纬度
      */
-    private Integer latitude;
+    private Double latitude;
 }
